@@ -1,0 +1,59 @@
+name: push docker hub
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Release version
+        id: release_version
+        run: |
+          app_version=$(cat version.keep)
+          echo "app_version=$app_version" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          build-args: |
+            GITHUB_TOKEN=${{ secrets.RELEASE_TOKEN }}
+          platforms: |
+            linux/amd64
+          # linux/arm64
+          # linux/arm
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/xxl-job:latest
+            ${{ secrets.DOCKER_USERNAME }}/xxl-job:${{ env.app_version }}
+
+      # 这里是通过md文件自动生成dockerhub描述的模块，也可以不需要
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{ secrets.DOCKER_USERNAME }}/xxl-job
+          readme-filepath: ./README.md
