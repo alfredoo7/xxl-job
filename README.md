@@ -1,12 +1,14 @@
 # XXL-JOB
 
-自动发布项目到 docker hub, 以便让极空间 pull 到来部署 xxl-job-admin
+已废弃
 
-本项目: https://github.com/alfredoo7/xxl-job
+~~自动发布项目到 docker hub, 以便让极空间 pull 到来部署 xxl-job-admin~~
+
+~~本项目: https://github.com/alfredoo7/xxl-job~~
 
 源项目: https://github.com/xuxueli/xxl-job
 
-## 注意点
+## ~~注意点~~
 
 ```yml
 # CICD 需配置 
@@ -25,8 +27,4 @@ version.keep
 
 # 环境 PARAMS 需设置，注入数据库地址 
 PARAMS = --spring.datasource.url=jdbc:mysql://xxx:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai --spring.datasource.username=root --spring.datasource.password=xxx
-```
-
-```properties
-docker run -e PARAMS="--spring.datasource.url=jdbc:mysql://127.0.0.1:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai" -p 8080:8080 -v /tmp:/data/applogs --name xxl-job-admin  -d xuxueli/xxl-job-admin:{指定版本}
 ```
